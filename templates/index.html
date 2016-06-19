@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GZMon</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+<div class="container">
+
+<h1>Hello</h1>
+
+<div class="row">
+
+{% for server in servers %}
+    <div class="col-sm-3">
+    <div class="thumbnail" style="min-height: 200px;">
+        <div class="caption"><h3>{{ server.title }}</h3>
+            {% for widget in server.widgets %}
+                {{ widget|safe }}
+            {% endfor %}
+        </div>
+    </div>
+    </div>
+{% endfor %}
+
+</div>
+
+</div>
+
+<script src="/static/jquery-2.2.4.min.js" type="text/javascript"></script>
+<script src="/static/bootstrap.min.js" type="text/javascript"></script>
+<script src="/static/socket.io.min.js" type="text/javascript"></script>
+
+
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+    socket.on('sendmsg', function (msg) {
+        $('#log').append('<br>' + $('<div/>').text('' + msg.data + ' ' + msg.a + ' ' + msg.b).html());
+    });
+    socket.on('clear', function () {
+        $('#log').empty();
+    });
+    socket.on('update', function (data) {
+        var v = $('#' + data.vid);
+        v.html(data.value);
+        v.attr('class',data.class);
+    });
+});
+</script>
+
+
+</body>
+</html>
